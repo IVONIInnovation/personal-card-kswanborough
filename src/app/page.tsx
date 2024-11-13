@@ -6,20 +6,19 @@ import { Plus_Jakarta_Sans, Space_Grotesk, Roboto_Mono } from 'next/font/google'
 
 const plusJakartaSans = Plus_Jakarta_Sans({ 
   subsets: ['latin'],
-  weight: ['400', '500'],
-  display: 'swap',
+  weight: ['400', '500', '600'],
   variable: '--font-plus-jakarta-sans',
 });
 
 const spaceGrotesk = Space_Grotesk({ 
   subsets: ['latin'],
-  display: 'swap',
+  weight: ['400', '500'],
   variable: '--font-space-grotesk',
 });
 
 const robotoMono = Roboto_Mono({ 
   subsets: ['latin'],
-  display: 'swap',
+  weight: ['400'],
   variable: '--font-roboto-mono',
 });
 
