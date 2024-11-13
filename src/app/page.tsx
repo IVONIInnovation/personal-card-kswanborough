@@ -1,23 +1,26 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-import { Phone, Globe, Linkedin, Circle, ChevronRight, ChevronDown, ArrowLeft } from 'lucide-react';
+import { Phone, Globe, Linkedin, Circle, ChevronRight, ChevronDown, ArrowLeft, MapPin } from 'lucide-react';
 import { Plus_Jakarta_Sans, Space_Grotesk, Roboto_Mono } from 'next/font/google';
 
 const plusJakartaSans = Plus_Jakarta_Sans({ 
   subsets: ['latin'],
+  display: 'swap',
   weight: ['400', '500', '600'],
   variable: '--font-plus-jakarta-sans',
 });
 
 const spaceGrotesk = Space_Grotesk({ 
   subsets: ['latin'],
+  display: 'swap',
   weight: ['400', '500'],
   variable: '--font-space-grotesk',
 });
 
 const robotoMono = Roboto_Mono({ 
   subsets: ['latin'],
+  display: 'swap',
   weight: ['400'],
   variable: '--font-roboto-mono',
 });
@@ -28,6 +31,8 @@ export default function Home() {
   const [ukTime, setUkTime] = useState('');
   const [esTime, setEsTime] = useState('');
   const [showScrollIndicator, setShowScrollIndicator] = useState(true);
+  const [showLocation, setShowLocation] = useState<'UK' | 'ES' | null>(null);
+  const [currentLanguage, setCurrentLanguage] = useState<'en' | 'es' | 'cat'>('en');
   const websitesRef = useRef(null);
   const spinTimeoutRef = useRef(null);
 
@@ -42,6 +47,36 @@ export default function Home() {
   const cardBg = themeIndex === 0 
     ? 'bg-gradient-to-br from-gray-600/80 to-gray-700/80' 
     : 'bg-gradient-to-br from-white/10 to-white/20';
+
+  const translations = {
+    en: {
+      title: 'Brand Development • Design • Web',
+      seeAll: 'see all',
+      scroll: 'scroll',
+      location: {
+        uk: 'York, UK',
+        es: 'Barcelona, Spain'
+      }
+    },
+    es: {
+      title: 'Desarrollo de Marca • Diseño • Web',
+      seeAll: 'ver todo',
+      scroll: 'desplazar',
+      location: {
+        uk: 'York, Reino Unido',
+        es: 'Barcelona, España'
+      }
+    },
+    cat: {
+      title: 'Desenvolupament de Marca • Disseny • Web',
+      seeAll: 'veure tot',
+      scroll: 'desplaçar',
+      location: {
+        uk: 'York, Regne Unit',
+        es: 'Barcelona, Espanya'
+      }
+    }
+  };
   const websites = [
     {
       name: 'kaiswanborough.com',
@@ -121,8 +156,21 @@ export default function Home() {
       // Set timeout to remove spinning class after animation
       spinTimeoutRef.current = setTimeout(() => {
         setIsSpinning(false);
-      }, 500); // Match this with the CSS animation duration
+      }, 300); // Reduced from 500ms to 300ms for faster spin
     }
+  };
+
+  const handleTimeClick = (location: 'UK' | 'ES') => {
+    setShowLocation(prev => prev === location ? null : location);
+    setTimeout(() => setShowLocation(null), 2000);
+  };
+
+  const handleLanguageChange = () => {
+    setCurrentLanguage(prev => {
+      if (prev === 'en') return 'es';
+      if (prev === 'es') return 'cat';
+      return 'en';
+    });
   };
   useEffect(() => {
     const updateTimes = () => {
@@ -142,29 +190,29 @@ export default function Home() {
     };
   }, []);
   return (
-    <div className={`min-h-screen bg-gradient-to-br ${themes[themeIndex]} transition-all duration-1000 flex flex-col items-center justify-center gap-8 p-6 ${plusJakartaSans.variable} ${spaceGrotesk.variable} ${robotoMono.variable}`}>
+    <div className={`min-h-screen bg-gradient-to-br ${themes[themeIndex]} transition-all duration-1000 flex flex-col items-center justify-center gap-8 p-6 ${plusJakartaSans.variable} ${spaceGrotesk.variable} ${robotoMono.variable} font-sans`}>
       <div className="w-80 h-48 [perspective:1000px]">
         <div 
           onClick={handleCardClick}
-          className={`relative w-full h-full cursor-pointer transition-transform duration-500 [transform-style:preserve-3d] ${
-            isSpinning ? '[transform:rotateY(360deg)]' : '[transform:rotateY(0deg)]'
+          className={`relative w-full h-full cursor-pointer transition-all duration-300 ease-in-out [transform-style:preserve-3d] ${
+            isSpinning ? '[transform:rotateY(180deg)]' : '[transform:rotateY(0deg)]'
           }`}
         >
           {/* Front Side */}
-          <div className="absolute w-full h-full rounded-xl overflow-hidden ring-2 ring-white/30">
+          <div className="absolute w-full h-full rounded-xl overflow-hidden ring-2 ring-white/30 [backface-visibility:hidden]">
             <div className={`absolute inset-0 ${cardBg} backdrop-blur-xl`} />
             
             <div className="relative h-full p-5">
               <div className="space-y-0.5">
-                <h1 className="text-lg font-medium tracking-tight text-white font-['font-plus-jakarta-sans']">
+                <h1 className="text-lg font-medium tracking-tight text-white font-plus-jakarta-sans">
                   Kai Swanborough
                 </h1>
-                <p className="text-xs font-regular text-white/80 font-['font-roboto-mono'] tracking-tight">
-                  Brand Development • Design • Web
+                <p className="text-xs font-regular text-white/80 font-roboto-mono tracking-tight">
+                  {translations[currentLanguage].title}
                 </p>
               </div>
 
-              <div className="mt-5 space-y-1.5 text-xs text-white/90 font-['font-space-grotesk']">
+              <div className="mt-5 space-y-1.5 text-xs text-white/90 font-space-grotesk">
                 <div 
                   className="flex items-center gap-2 cursor-pointer hover:text-white transition-colors"
                   onClick={(e) => handleLinkClick(e, 'tel:+447592660717')}
@@ -183,7 +231,7 @@ export default function Home() {
                   onClick={handleWebsitesClick}
                 >
                   <Globe className="w-3 h-3" />
-                  <span>kaiswanborough.com (see all)</span>
+                  <span>kaiswanborough.com ({translations[currentLanguage].seeAll})</span>
                 </div>
                 <div 
                   className="flex items-center gap-2 cursor-pointer hover:text-white transition-colors"
@@ -195,6 +243,11 @@ export default function Home() {
               </div>
 
               <div className="absolute bottom-4 right-4 w-6 h-6 rounded-full bg-white/10" />
+            </div>
+
+            {/* Back Side (Blank) */}
+            <div className="absolute inset-0 [backface-visibility:hidden] [transform:rotateY(180deg)]">
+              <div className={`absolute inset-0 ${cardBg} backdrop-blur-xl rounded-xl`} />
             </div>
             {/* Website Grid Overlay */}
             <div 
@@ -217,12 +270,12 @@ export default function Home() {
                           <div className="flex items-center justify-between gap-3">
                             <div className="flex items-center gap-3">
                               <Circle className="w-1.5 h-1.5 text-white/40" />
-                              <span className="text-sm text-white font-['font-space-grotesk']">{site.name}</span>
+                              <span className="text-sm text-white font-space-grotesk">{site.name}</span>
                               {site.links.map((link, j) => (
                                 <span
                                   key={j}
                                   onClick={(e) => handleLinkClick(e, link.url)}
-                                  className="text-sm text-white/70 font-['font-space-grotesk'] hover:text-white/90 transition-colors cursor-pointer"
+                                  className="text-sm text-white/70 font-space-grotesk hover:text-white/90 transition-colors cursor-pointer"
                                 >
                                   {link.text}
                                 </span>
@@ -230,7 +283,7 @@ export default function Home() {
                             </div>
                             <div className="flex items-center gap-2">
                               <ChevronRight className="w-3 h-3 text-white/30" />
-                              <span className="text-xs text-white/50 font-['font-space-grotesk']">{site.description}</span>
+                              <span className="text-xs text-white/50 font-space-grotesk">{site.description}</span>
                             </div>
                           </div>
                         ) : (
@@ -240,11 +293,11 @@ export default function Home() {
                           >
                             <div className="flex items-center gap-3">
                               <Circle className="w-1.5 h-1.5 text-white/40" />
-                              <span className="text-sm text-white font-['font-space-grotesk'] group-hover:text-white/80 transition-colors">{site.name}</span>
+                              <span className="text-sm text-white font-space-grotesk group-hover:text-white/80 transition-colors">{site.name}</span>
                             </div>
                             <div className="flex items-center gap-2">
                               <ChevronRight className="w-3 h-3 text-white/30 group-hover:text-white/50 transition-colors" />
-                              <span className="text-xs text-white/50 font-['font-space-grotesk'] group-hover:text-white/70 transition-colors">{site.description}</span>
+                              <span className="text-xs text-white/50 font-space-grotesk group-hover:text-white/70 transition-colors">{site.description}</span>
                             </div>
                           </div>
                         )}
@@ -265,11 +318,11 @@ export default function Home() {
                       >
                         <div className="flex items-center gap-3">
                           <Circle className="w-1.5 h-1.5 text-white/20" />
-                          <span className="text-sm text-white/70 font-['font-space-grotesk'] group-hover:text-white/90 transition-colors">{site.name}</span>
+                          <span className="text-sm text-white/70 font-space-grotesk group-hover:text-white/90 transition-colors">{site.name}</span>
                         </div>
                         <div className="flex items-center gap-2">
                           <ChevronRight className="w-3 h-3 text-white/20 group-hover:text-white/40 transition-colors" />
-                          <span className="text-xs text-white/40 font-['font-space-grotesk'] group-hover:text-white/60 transition-colors">{site.description}</span>
+                          <span className="text-xs text-white/40 font-space-grotesk group-hover:text-white/60 transition-colors">{site.description}</span>
                         </div>
                       </div>
                     ))}
@@ -282,7 +335,7 @@ export default function Home() {
                 <div className="absolute inset-0 bg-gradient-to-t from-gray-900 via-gray-900/20 to-transparent" />
                 <div className="absolute bottom-2 left-1/2 -translate-x-1/2">
                   <div className="px-1.5 py-0.5 rounded-full bg-white/5 backdrop-blur-sm flex items-center gap-0.5">
-                    <span className="text-[8px] text-white/50">scroll</span>
+                    <span className="text-[8px] text-white/50">{translations[currentLanguage].scroll}</span>
                     <ChevronDown className="w-1.5 h-1.5 text-white/50" />
                   </div>
                 </div>
@@ -299,21 +352,46 @@ export default function Home() {
           </div>
         </div>
       </div>
+
       {/* Control Panel */}
-      <div className="bg-white/80 backdrop-blur-sm shadow-sm rounded-full px-4 py-2 flex items-center gap-8">
+      <div className="relative bg-white/80 backdrop-blur-sm shadow-sm rounded-full px-4 py-2 flex items-center gap-8">
         <div 
           onClick={() => setThemeIndex((prev) => (prev + 1) % themes.length)}
           className={`w-4 h-4 rounded-full transition-all duration-300 bg-gradient-to-br ${themes[themeIndex]} hover:scale-110 cursor-pointer ring-1 ring-black/10 hover:ring-black/20 shadow-sm`}
         />
         <div className="flex items-center gap-6">
-          <div className="flex items-center">
-            <span className="font-['font-roboto-mono'] text-sm font-medium tracking-tight text-gray-800/70">{ukTime}</span>
+          <div 
+            className="flex items-center cursor-pointer relative"
+            onClick={() => handleTimeClick('UK')}
+          >
+            <span className="font-roboto-mono text-sm font-medium tracking-tight text-gray-800/70">{ukTime}</span>
+            {showLocation === 'UK' && (
+              <div className="absolute -top-8 left-1/2 -translate-x-1/2 px-2 py-1 bg-black/80 text-white text-xs rounded-md whitespace-nowrap flex items-center gap-1">
+                <MapPin className="w-3 h-3" />
+                <span>{translations[currentLanguage].location.uk}</span>
+              </div>
+            )}
           </div>
           <div className="w-px h-3 bg-gray-400/20" />
-          <div className="flex items-center">
-            <span className="font-['font-roboto-mono'] text-sm font-medium tracking-tight text-gray-800/70">{esTime}</span>
+          <div 
+            className="flex items-center cursor-pointer relative"
+            onClick={() => handleTimeClick('ES')}
+          >
+            <span className="font-roboto-mono text-sm font-medium tracking-tight text-gray-800/70">{esTime}</span>
+            {showLocation === 'ES' && (
+              <div className="absolute -top-8 left-1/2 -translate-x-1/2 px-2 py-1 bg-black/80 text-white text-xs rounded-md whitespace-nowrap flex items-center gap-1">
+                <MapPin className="w-3 h-3" />
+                <span>{translations[currentLanguage].location.es}</span>
+              </div>
+            )}
           </div>
         </div>
+        <button
+          onClick={handleLanguageChange}
+          className="text-xs font-medium text-gray-800/70 hover:text-gray-800 transition-colors"
+        >
+          {currentLanguage.toUpperCase()}
+        </button>
       </div>
     </div>
   );
