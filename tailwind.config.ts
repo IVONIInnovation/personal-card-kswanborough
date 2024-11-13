@@ -1,5 +1,4 @@
 import type { Config } from "tailwindcss"
-
 const config = {
   darkMode: ["class"],
   content: [
@@ -22,6 +21,7 @@ const config = {
         sans: ['var(--font-plus-jakarta-sans)'],
         mono: ['var(--font-roboto-mono)'],
         'space-grotesk': ['var(--font-space-grotesk)'],
+        'plus-jakarta-sans': ['var(--font-plus-jakarta-sans)'], // Add this line
       },
       colors: {
         border: "hsl(var(--border))",
@@ -81,5 +81,4 @@ const config = {
   },
   plugins: [require("tailwindcss-animate")],
 } satisfies Config
-
 export default config
