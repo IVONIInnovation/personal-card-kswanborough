@@ -125,25 +125,15 @@ const websites = [
 
 return (
     <div className={`min-h-screen bg-gradient-to-br ${themes[themeIndex]} transition-all duration-1000 flex flex-col items-center justify-center gap-8 p-6 ${plusJakartaSans.variable} ${spaceGrotesk.variable} ${robotoMono.variable}`}>
-      <div className="w-80 h-48 perspective-1000">
+      <div className="w-80 h-48 [perspective:1000px]">
         <div 
           onClick={() => !showWebsites && setIsFlipped(!isFlipped)}
-          className="relative w-full h-full duration-500 cursor-pointer"
-          style={{ 
-            transformStyle: 'preserve-3d',
-            WebkitTransformStyle: 'preserve-3d',
-            transform: isFlipped ? 'rotateY(180deg)' : 'rotateY(0deg)',
-            transition: 'transform 0.6s'
-          }}
+          className={`relative w-full h-full cursor-pointer transition-transform duration-500 [transform-style:preserve-3d] ${
+            isFlipped ? '[transform:rotateY(180deg)]' : '[transform:rotateY(0deg)]'
+          }`}
         >
           {/* Front Side */}
-          <div 
-            className="absolute w-full h-full rounded-xl overflow-hidden ring-2 ring-white/30"
-            style={{ 
-              backfaceVisibility: 'hidden',
-              WebkitBackfaceVisibility: 'hidden'
-            }}
-          >
+          <div className="absolute w-full h-full rounded-xl overflow-hidden ring-2 ring-white/30 [backface-visibility:hidden]">
             <div className={`absolute inset-0 ${cardBg} backdrop-blur-xl`} />
             
             <div className="relative h-full p-5">
@@ -291,14 +281,7 @@ return (
             </div>
 
             {/* Back Side */}
-            <div 
-              className="absolute w-full h-full rounded-xl overflow-hidden ring-2 ring-white/30"
-              style={{ 
-                backfaceVisibility: 'hidden',
-                WebkitBackfaceVisibility: 'hidden',
-                transform: 'rotateY(180deg)'
-              }}
-            >
+            <div className="absolute w-full h-full rounded-xl overflow-hidden ring-2 ring-white/30 [backface-visibility:hidden] [transform:rotateY(180deg)]">
               <div className={`absolute inset-0 ${cardBg} backdrop-blur-xl`} />
               
               <div className="h-full flex flex-col items-center justify-center p-6">
