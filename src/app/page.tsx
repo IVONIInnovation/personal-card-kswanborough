@@ -1,516 +1,316 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { Card } from '@/components/ui/card';
+import React, { useState, useEffect, useRef } from 'react';
+import { Phone, Globe, Linkedin, Circle, ChevronRight, ChevronDown, ArrowLeft } from 'lucide-react';
 
-type PersonType = {
-  id: number;
-  type: 'single' | 'couple' | 'family';
-  gender?: 'M' | 'F';
-  role?: 'parent' | 'child';
-  baseSpeed: number;
-  direction: number;
-  startProgress: number;
-  baseLane: number;
-  waviness: number;
-  waveOffset: number;
-  progress: number;
-  lane: number;
-  pathHistory: Array<{ x: number; y: number }>;
-  futureSteps: any[];
-};
+export default function Home() {
+  const [isFlipped, setIsFlipped] = useState(false);
+  const [showWebsites, setShowWebsites] = useState(false);
+  const [themeIndex, setThemeIndex] = useState(0);
+  const [ukTime, setUkTime] = useState('');
+  const [esTime, setEsTime] = useState('');
+  const [showScrollIndicator, setShowScrollIndicator] = useState(true);
+  const websitesRef = useRef(null);
 
-type DetailedStats = {
-  singles: {
-    total: number;
-    male: number;
-    female: number;
+  const themes = [
+    'from-gray-200 via-gray-100 to-gray-200',
+    'from-zinc-800 to-zinc-900',
+    'from-indigo-500 to-violet-500',
+    'from-emerald-500 to-teal-500',
+    'from-orange-500 to-amber-500'
+  ];
+
+  const cardBg = themeIndex === 0 
+    ? 'bg-gradient-to-br from-gray-600/80 to-gray-700/80' 
+    : 'bg-gradient-to-br from-white/10 to-white/20';
+
+const websites = [
+    {
+      name: 'kaiswanborough.com',
+      description: 'Freelance',
+      url: 'https://kaiswanborough.com',
+      priority: 1
+    },
+    {
+      name: 'IVONI',
+      links: [
+        { text: '.org', url: 'https://ivoni.org' },
+        { text: '.es', url: 'https://ivoni.es' },
+        { text: '.cat', url: 'https://ivoni.cat' }
+      ],
+      description: 'Company',
+      priority: 1
+    },
+    {
+      name: 'agenciamira.es',
+      description: 'BCN Agency',
+      url: 'https://agenciamira.es',
+      priority: 1
+    },
+    {
+      name: 'globaloffset.co',
+      description: 'Startup',
+      url: 'https://globaloffset.co',
+      priority: 1
+    },
+    {
+      name: 'portaldiseno.es',
+      description: 'Uni Portfolio',
+      url: 'https://portaldiseno.es',
+      priority: 2
+    },
+    {
+      name: 'extraccion.net',
+      description: 'Scholarship Project',
+      url: 'https://extraccion.net',
+      priority: 2
+    },
+    {
+      name: 'mirafest.es',
+      description: 'Festival',
+      url: 'https://mirafest.es',
+      priority: 2
+    }
+  ];
+
+  const handleLinkClick = (e: React.MouseEvent, url: string) => {
+    e.stopPropagation();
+    window.open(url, '_blank');
   };
-  couples: {
-    total: number;
-    count: number;
+
+  const handleWebsitesClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setShowWebsites(!showWebsites);
   };
-  families: {
-    total: number;
-    count: number;
-    parents: number;
-    children: {
-      total: number;
-      boys: number;
-      girls: number;
+
+  const handleScroll = () => {
+    if (websitesRef.current) {
+      const { scrollTop } = websitesRef.current;
+      if (scrollTop > 20) {
+        setShowScrollIndicator(false);
+      } else {
+        setShowScrollIndicator(true);
+      }
+    }
+  };
+
+  useEffect(() => {
+    const updateTimes = () => {
+      setUkTime(new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', timeZone: 'Europe/London' }));
+      setEsTime(new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Madrid' }));
     };
-  };
-};
-
-const StatsPanel = ({ 
-  label, 
-  value, 
-  detailedStats, 
-  isOpen, 
-  onClick 
-}: { 
-  label: string;
-  value: number;
-  detailedStats: any;
-  isOpen: boolean;
-  onClick: () => void;
-}) => {
-  return (
-    <div className="relative">
-      <div 
-        className={`bg-gray-50 p-2 rounded text-center cursor-pointer transition-colors ${isOpen ? 'bg-gray-100' : 'hover:bg-gray-100'}`}
-        onClick={onClick}
-      >
-        <div className="text-xs text-gray-600 capitalize">{label}</div>
-        <div className="text-sm font-bold">{value}</div>
-      </div>
-      
-      {isOpen && (
-        <div className="absolute top-full left-0 right-0 mt-2 p-3 bg-white rounded-lg shadow-lg z-10 border border-gray-200">
-          {label === 'singles' && (
-            <div className="space-y-1">
-              <div className="text-xs text-gray-500">Total Singles: {detailedStats.total}</div>
-              <div className="flex justify-between text-xs">
-                <span className="text-blue-600">Males: {detailedStats.male}</span>
-                <span className="text-pink-400">Females: {detailedStats.female}</span>
-              </div>
-              <div className="text-xs text-gray-500">
-                Ratio: {((detailedStats.male / detailedStats.total) * 100).toFixed(1)}% M / {((detailedStats.female / detailedStats.total) * 100).toFixed(1)}% F
-              </div>
-            </div>
-          )}
-          
-          {label === 'couples' && (
-            <div className="space-y-1">
-              <div className="text-xs text-gray-500">Total Couples: {detailedStats.count}</div>
-              <div className="text-xs text-gray-500">Total People: {detailedStats.total}</div>
-            </div>
-          )}
-          
-          {label === 'families' && (
-            <div className="space-y-1">
-              <div className="text-xs text-gray-500">Total Families: {detailedStats.count}</div>
-              <div className="text-xs text-gray-500">Parents: {detailedStats.parents}</div>
-              <div className="text-xs text-gray-500 mt-1">Children: {detailedStats.children.total}</div>
-              <div className="flex justify-between text-xs">
-                <span className="text-green-500">Boys: {detailedStats.children.boys}</span>
-                <span className="text-yellow-500">Girls: {detailedStats.children.girls}</span>
-              </div>
-              <div className="text-xs text-gray-500">
-                Children Ratio: {((detailedStats.children.boys / detailedStats.children.total) * 100).toFixed(1)}% B / {((detailedStats.children.girls / detailedStats.children.total) * 100).toFixed(1)}% G
-              </div>
-            </div>
-          )}
-        </div>
-      )}
-    </div>
-  );
-};
-
-const PeopleMovement = () => {
-  const generateGroups = () => {
-    const groups = [];
-    let id = 0;
-    
-    // Generate couples (55%)
-    for (let i = 0; i < 20; i++) {
-      const baseSpeed = 0.04 + Math.random() * 0.01;
-      const direction = Math.random() > 0.5 ? 1 : -1;
-      const startProgress = Math.random() * 100;
-      const baseLane = Math.random() > 0.5 ? 0.5 : -0.5;
-      const waviness = Math.random() > 0.7 ? 0.15 + Math.random() * 0.1 : 0; // Some couples meander
-      
-      groups.push([
-        {
-          id: id++,
-          type: 'couple',
-          baseSpeed,
-          direction,
-          startProgress,
-          baseLane: baseLane - 0.1,
-          waviness,
-          waveOffset: Math.random() * Math.PI * 2
-        },
-        {
-          id: id++,
-          type: 'couple',
-          baseSpeed,
-          direction,
-          startProgress,
-          baseLane: baseLane + 0.1,
-          waviness,
-          waveOffset: Math.random() * Math.PI * 2
-        }
-      ]);
-    }
-    
-    // Generate singles (25%)
-    for (let i = 0; i < 15; i++) {
-      const waviness = Math.random() > 0.6 ? 0.2 + Math.random() * 0.15 : 0; // Singles meander more
-      groups.push([{
-        id: id++,
-        type: 'single',
-        gender: Math.random() > 0.35 ? 'M' : 'F',
-        baseSpeed: 0.04 + Math.random() * 0.01,
-        direction: Math.random() > 0.5 ? 1 : -1,
-        startProgress: Math.random() * 100,
-        baseLane: (Math.random() > 0.5 ? 1 : -1) * (0.3 + Math.random() * 0.4),
-        waviness,
-        waveOffset: Math.random() * Math.PI * 2
-      }]);
-    }
-    
-    // Generate families (20%)
-    for (let i = 0; i < 8; i++) {
-      const baseSpeed = 0.035 + Math.random() * 0.01;
-      const direction = Math.random() > 0.5 ? 1 : -1;
-      const startProgress = Math.random() * 100;
-      const baseLane = (Math.random() > 0.5 ? 1 : -1) * 0.5;
-      const waviness = Math.random() > 0.8 ? 0.1 + Math.random() * 0.05 : 0;
-      const waveOffset = Math.random() * Math.PI * 2;
-      
-      
-      const familyGroup = [
-        // Parents - one male, one female
-        {
-          id: id++,
-          type: 'family',
-          role: 'parent',
-          gender: 'M',
-          baseSpeed,
-          direction,
-          startProgress,
-          baseLane: baseLane - 0.15,
-          waviness,
-          waveOffset
-        },
-        {
-          id: id++,
-          type: 'family',
-          role: 'parent',
-          gender: 'F',
-          baseSpeed,
-          direction,
-          startProgress,
-          baseLane: baseLane + 0.15,
-          waviness,
-          waveOffset
-        }
-      ];
-      
-      // Add 1-2 children
-      const childCount = Math.random() > 0.5 ? 2 : 1;
-      for (let c = 0; c < childCount; c++) {
-        familyGroup.push({
-          id: id++,
-          type: 'family',
-          role: 'child',
-          gender: Math.random() > 0.5 ? 'M' : 'F',
-          baseSpeed,
-          direction,
-          startProgress,
-          baseLane: baseLane + (c === 0 ? -0.05 : 0.05),
-          waviness,
-          waveOffset
-        });
-      }
-      
-      groups.push(familyGroup);
-    }
-    
-    return groups.flat();
-  };
-
-  const [people, setPeople] = useState(() => 
-    generateGroups().map(person => ({
-      ...person,
-      progress: person.startProgress,
-      lane: person.baseLane,
-      pathHistory: [],
-      futureSteps: []
-    }))
-  );
-  
-  const [hoveredPerson, setHoveredPerson] = useState(null);
-  const [stats, setStats] = useState({
-    singles: 0,
-    couples: 0,
-    families: 0
-  });
-
-  
-const [detailedStats, setDetailedStats] = useState<DetailedStats>({
-  singles: { total: 0, male: 0, female: 0 },
-  couples: { total: 0, count: 0 },
-  families: { total: 0, count: 0, parents: 0, children: { total: 0, boys: 0, girls: 0 } }
-});
-const [openStatPanel, setOpenStatPanel] = useState<string | null>(null);
-
-
-  useEffect(() => {
-  const newDetailedStats = {
-    singles: {
-      total: people.filter(p => p.type === 'single').length,
-      male: people.filter(p => p.type === 'single' && p.gender === 'M').length,
-      female: people.filter(p => p.type === 'single' && p.gender === 'F').length
-    },
-    couples: {
-      total: people.filter(p => p.type === 'couple').length,
-      count: people.filter(p => p.type === 'couple').length / 2
-    },
-    families: {
-      total: people.filter(p => p.type === 'family').length,
-      count: people.filter(p => p.type === 'family' && p.role === 'parent').length / 2,
-      parents: people.filter(p => p.type === 'family' && p.role === 'parent').length,
-      children: {
-        total: people.filter(p => p.type === 'family' && p.role === 'child').length,
-        boys: people.filter(p => p.type === 'family' && p.role === 'child' && p.gender === 'M').length,
-        girls: people.filter(p => p.type === 'family' && p.role === 'child' && p.gender === 'F').length
-      }
-    }
-  };
-  
-  setDetailedStats(newDetailedStats);
-  setStats({
-    singles: newDetailedStats.singles.total,
-    couples: newDetailedStats.couples.count,
-    families: newDetailedStats.families.count
-  });
-}, [people]);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setPeople(currentPeople =>
-        currentPeople.map(person => {
-          let newProgress = person.progress + (person.baseSpeed * person.direction);
-          
-          let newLane = person.baseLane;
-          if (person.waviness) {
-            newLane += Math.sin((newProgress / 10) + person.waveOffset) * person.waviness;
-          }
-          
-          if (newProgress > 70 && newProgress < 85) {
-            const baseStream = person.baseLane > 0 ? 0.8 : -0.8;
-            newLane = baseStream + (person.waviness ? Math.sin((newProgress / 10) + person.waveOffset) * (person.waviness * 0.5) : 0);
-          }
-          
-          if (newProgress > 85 && newProgress < 95) {
-            const returnFactor = (95 - newProgress) / 10;
-            newLane = (person.baseLane * returnFactor + newLane * (1 - returnFactor));
-          }
-          
-          if (newProgress > 100) newProgress = 0;
-          if (newProgress < 0) newProgress = 100;
-          
-          const pos = getPosition(newProgress, newLane);
-          const newHistory = [...person.pathHistory, { x: pos.x, y: pos.y }].slice(-20);
-          
-          return {
-            ...person,
-            progress: newProgress,
-            lane: newLane,
-            pathHistory: newHistory
-          };
-        })
-      );
-    }, 50);
-
+    updateTimes();
+    const interval = setInterval(updateTimes, 60000);
     return () => clearInterval(interval);
   }, []);
 
-  const getPosition = (progress: number, lane: number) => {
-    const x = 50 + (progress / 100) * 500;
-    const y = 150 + (lane * 30);
-    return { x, y };
-  };
-
-  const getPersonColor = (person: any) => {
-    switch (person.type) {
-      case 'single':
-        return person.gender === 'M' ? '#4169e1' : '#ff69b4';
-      case 'couple':
-        return '#9333ea';
-      case 'family':
-        if (person.role === 'parent') return '#6366f1';
-        return person.gender === 'M' ? '#22c55e' : '#eab308';
-      default:
-        return '#666666';
-    }
-  };
-
-  return (
-    <main className="flex min-h-screen flex-col items-center p-6">
-      <Card className="p-6 w-full max-w-4xl">
-        <div className="flex justify-between items-start mb-4">
-          <div className="font-sans text-xl font-bold">La Rambla: Movimiento de personas</div>
-          <img 
-            src="https://www.elisava.net/wp-content/themes/elisava/images/logo.svg"
-            alt="Elisava Logo"
-            className="h-6.5 object-contain"
-          />
-        </div>
-        
-        <div className="mb-4 grid grid-cols-3 gap-2">
-            <StatsPanel
-              label="singles"
-              value={stats.singles}
-              detailedStats={detailedStats.singles}
-              isOpen={openStatPanel === 'singles'}
-              onClick={() => setOpenStatPanel(openStatPanel === 'singles' ? null : 'singles')}
-            />
-            <StatsPanel
-              label="couples"
-              value={stats.couples}
-              detailedStats={detailedStats.couples}
-              isOpen={openStatPanel === 'couples'}
-              onClick={() => setOpenStatPanel(openStatPanel === 'couples' ? null : 'couples')}
-            />
-            <StatsPanel
-              label="families"
-              value={stats.families}
-              detailedStats={detailedStats.families}
-              isOpen={openStatPanel === 'families'}
-              onClick={() => setOpenStatPanel(openStatPanel === 'families' ? null : 'families')}
-            />
-          </div>
-
-        <svg className="w-full h-96 bg-slate-50" viewBox="0 0 600 300">
-          <rect x="50" y="80" width="500" height="20" fill="#666"/>
-          <rect x="50" y="200" width="500" height="20" fill="#666"/>
-          <rect x="50" y="100" width="500" height="100" fill="#e5e7eb"/>
-          <rect x="500" y="50" width="50" height="200" fill="#666"/>
-          
-          <path
-            d="M 50 130 L 450 130 M 510 130 L 550 130"
-            stroke="#d1d5db"
-            strokeWidth="1"
-            strokeDasharray="5,5"
-          />
-          <path
-            d="M 50 170 L 450 170 M 510 170 L 550 170"
-            stroke="#d1d5db"
-            strokeWidth="1"
-            strokeDasharray="5,5"
-          />
-
-          <g transform="translate(480, 150)">
-            <rect x="-15" y="-15" width="30" height="30" fill="#dc2626" rx="5"/>
-            <text x="0" y="7" textAnchor="middle" fill="white" className="text-lg font-bold">M</text>
-            <text x="0" y="35" textAnchor="middle" fill="#666" className="text-xs">Pl. Catalunya</text>
-          </g>
-
-          {Array.from({ length: 20 }).map((_, i) => (
-            <React.Fragment key={`trees-${i}`}>
-              <circle cx={75 + i * 25} cy={70} r={4} fill="#2d9344"/>
-              <circle cx={75 + i * 25} cy={230} r={4} fill="#2d9344"/>
-            </React.Fragment>
-          ))}
-
-          {people.map(person => {
-            const pos = getPosition(person.progress, person.lane);
-            const isHovered = hoveredPerson === person.id;
-            const color = getPersonColor(person);
+return (
+    <div className={`min-h-screen bg-gradient-to-br ${themes[themeIndex]} transition-all duration-1000 flex flex-col items-center justify-center gap-8 p-6`}>
+      <div className="w-80 h-48 perspective-1000">
+        <div 
+          onClick={() => !showWebsites && setIsFlipped(!isFlipped)}
+          className="relative w-full h-full duration-500 cursor-pointer"
+          style={{ 
+            transformStyle: 'preserve-3d',
+            transform: isFlipped ? 'rotateY(180deg)' : ''
+          }}
+        >
+          {/* Front Side */}
+          <div 
+            className="absolute w-full h-full rounded-xl overflow-hidden ring-2 ring-white/30"
+            style={{ backfaceVisibility: 'hidden' }}
+          >
+            <div className={`absolute inset-0 ${cardBg} backdrop-blur-xl`} />
             
-            return (
-              <g key={person.id}>
-                {isHovered && person.pathHistory.map((histPos, i, arr) => {
-                  if (i === 0) return null;
-                  const prevPos = arr[i - 1];
-                  return (
-                    <g key={`path-${i}`}>
-                      <line
-                        x1={prevPos.x}
-                        y1={prevPos.y}
-                        x2={histPos.x}
-                        y2={histPos.y}
-                        stroke={color}
-                        strokeWidth="2"
-                        opacity={i / arr.length * 0.5}
-                      />
-                      {i === arr.length - 1 && (
-                        <polygon
-                          points={`${histPos.x},${histPos.y} 
-                                  ${histPos.x - person.direction * 8},${histPos.y - 4} 
-                                  ${histPos.x - person.direction * 8},${histPos.y + 4}`}
-                          fill={color}
-                        />
-                      )}
-                    </g>
-                  );
-                })}
-                
-                <circle
-                  cx={pos.x}
-                  cy={pos.y}
-                  r={isHovered ? 6 : (person.role === 'child' ? 3 : 4)}
-                  fill={color}
-                  opacity={0.8}
-                  onMouseEnter={() => setHoveredPerson(person.id)}
-                  onMouseLeave={() => setHoveredPerson(null)}
-                  className="cursor-pointer transition-all duration-200"
-                />
-                
-                {isHovered && (
-                  <g>
-                    <rect
-                      x={pos.x + 10}
-                      y={pos.y - 20}
-                      width="60"
-                      height="20"
-                      fill="white"
-                      stroke="#666"
-                      rx="4"
-                    />
-                    <text
-                      x={pos.x + 15}
-                      y={pos.y - 5}
-                      className="text-xs"
-                      fill="#333"
-                    >
-                      {person.type === 'family' ? 
-                        `${person.role}` : 
-                        person.type}
-                    </text>
-                  </g>
-                )}
-              </g>
-            );
-          })}
-        </svg>
-        
-        <div className="mt-2 text-xs text-gray-600 flex flex-wrap gap-4">
-          <div className="flex items-center gap-2">
-            <div className="flex items-center">
-              <div className="w-2 h-2 rounded-full bg-blue-600 mr-1"></div>
-              Soltero (H)
+            <div className="relative h-full p-5">
+              <div className="space-y-0.5">
+                <h1 className="text-lg font-medium tracking-tight text-white font-['Plus_Jakarta_Sans']">
+                  Kai Swanborough
+                </h1>
+                <p className="text-xs font-regular text-white/80 font-['Roboto_Mono'] tracking-tight">
+                  Brand Development • Design • Web
+                </p>
+              </div>
+
+              <div className="mt-5 space-y-1.5 text-xs text-white/90 font-['Space_Grotesk']">
+                <div 
+                  className="flex items-center gap-2 cursor-pointer hover:text-white transition-colors"
+                  onClick={(e) => handleLinkClick(e, 'tel:+447592660717')}
+                >
+                  <Phone className="w-3 h-3" />
+                  <span>UK (+44) 7592 660717</span>
+                </div>
+                <div 
+                  className="flex items-center gap-2 ml-5 cursor-pointer hover:text-white transition-colors"
+                  onClick={(e) => handleLinkClick(e, 'tel:+34649058386')}
+                >
+                  <span>ES (+34) 649 058 386</span>
+                </div>
+                <div 
+                  className="flex items-center gap-2 cursor-pointer hover:text-white transition-colors"
+                  onClick={handleWebsitesClick}
+                >
+                  <Globe className="w-3 h-3" />
+                  <span>kaiswanborough.com (see all)</span>
+                </div>
+                <div 
+                  className="flex items-center gap-2 cursor-pointer hover:text-white transition-colors"
+                  onClick={(e) => handleLinkClick(e, 'https://linkedin.com/in/kaiswanborough')}
+                >
+                  <Linkedin className="w-3 h-3" />
+                  <span>in/kaiswanborough</span>
+                </div>
+              </div>
+
+              <div className="absolute bottom-4 right-4 w-6 h-6 rounded-full bg-white/10" />
             </div>
-            <div className="flex items-center">
-              <div className="w-2 h-2 rounded-full bg-pink-400 mr-1"></div>
-              Soltera (M)
+
+            {/* Website Grid Overlay */}
+            <div 
+              className={`absolute inset-0 bg-gradient-to-br from-gray-800/90 to-gray-900/90 backdrop-blur-xl rounded-xl transition-all duration-300 ${
+                showWebsites ? 'opacity-100' : 'opacity-0 pointer-events-none'
+              }`}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div 
+                ref={websitesRef}
+                onScroll={handleScroll}
+                className="h-full overflow-y-auto px-5 pt-5 pb-12"
+              >
+                <div className="space-y-4 relative">
+                  {/* Main websites */}
+                  <div className="space-y-2.5">
+                    {websites.filter(w => w.priority === 1).map((site, i) => (
+                      <div key={i} className="group">
+                        {site.links ? (
+                          <div className="flex items-center justify-between gap-3">
+                            <div className="flex items-center gap-3">
+                              <Circle className="w-1.5 h-1.5 text-white/40" />
+                              <span className="text-sm text-white font-['Space_Grotesk']">{site.name}</span>
+                              {site.links.map((link, j) => (
+                                <span
+                                  key={j}
+                                  onClick={(e) => handleLinkClick(e, link.url)}
+                                  className="text-sm text-white/70 font-['Space_Grotesk'] hover:text-white/90 transition-colors cursor-pointer"
+                                >
+                                  {link.text}
+                                </span>
+                              ))}
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <ChevronRight className="w-3 h-3 text-white/30" />
+                              <span className="text-xs text-white/50 font-['Space_Grotesk']">{site.description}</span>
+                            </div>
+                          </div>
+                        ) : (
+                          <div 
+                            className="flex items-center justify-between gap-3 cursor-pointer"
+                            onClick={(e) => handleLinkClick(e, site.url)}
+                          >
+                            <div className="flex items-center gap-3">
+                              <Circle className="w-1.5 h-1.5 text-white/40" />
+                              <span className="text-sm text-white font-['Space_Grotesk'] group-hover:text-white/80 transition-colors">{site.name}</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <ChevronRight className="w-3 h-3 text-white/30 group-hover:text-white/50 transition-colors" />
+                              <span className="text-xs text-white/50 font-['Space_Grotesk'] group-hover:text-white/70 transition-colors">{site.description}</span>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Border divider */}
+                  <div className="border-t border-white/10" />
+
+                  {/* Secondary websites */}
+                  <div className="space-y-2.5">
+                    {websites.filter(w => w.priority === 2).map((site, i) => (
+                      <div 
+                        key={i}
+                        className="flex items-center justify-between gap-3 group cursor-pointer"
+                        onClick={(e) => handleLinkClick(e, site.url)}
+                      >
+                        <div className="flex items-center gap-3">
+                          <Circle className="w-1.5 h-1.5 text-white/20" />
+                          <span className="text-sm text-white/70 font-['Space_Grotesk'] group-hover:text-white/90 transition-colors">{site.name}</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <ChevronRight className="w-3 h-3 text-white/20 group-hover:text-white/40 transition-colors" />
+                          <span className="text-xs text-white/40 font-['Space_Grotesk'] group-hover:text-white/60 transition-colors">{site.description}</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {/* Enhanced scroll indicator with shorter blur effect */}
+              <div className={`absolute bottom-0 left-0 right-0 h-8 pointer-events-none transition-opacity duration-300 ${showScrollIndicator ? 'opacity-100' : 'opacity-0'}`}>
+                <div className="absolute inset-0 bg-gradient-to-t from-gray-900 via-gray-900/20 to-transparent" />
+                <div className="absolute bottom-2 left-1/2 -translate-x-1/2">
+                  <div className="px-1.5 py-0.5 rounded-full bg-white/5 backdrop-blur-sm flex items-center gap-0.5">
+                    <span className="text-[8px] text-white/50">scroll</span>
+                    <ChevronDown className="w-1.5 h-1.5 text-white/50" />
+                  </div>
+                </div>
+              </div>
+
+              {/* Back arrow button */}
+              <button 
+                onClick={() => setShowWebsites(false)}
+                className="absolute top-3 left-3 p-1.5 rounded-lg bg-white/5 hover:bg-white/10 backdrop-blur-sm transition-colors"
+              >
+                <ArrowLeft className="w-4 h-4 text-white/70" />
+              </button>
             </div>
-            <div className="flex items-center">
-              <div className="w-2 h-2 rounded-full bg-purple-600 mr-1"></div>
-              Pareja
-            </div>
-            <div className="flex items-center">
-              <div className="w-2 h-2 rounded-full bg-indigo-500 mr-1"></div>
-              Padres
-            </div>
-            <div className="flex items-center">
-              <div className="w-2 h-2 rounded-full bg-green-500 mr-1"></div>
-              Chico
-            </div>
-            <div className="flex items-center">
-              <div className="w-2 h-2 rounded-full bg-yellow-500 mr-1"></div>
-              Niña
+
+            {/* Back Side */}
+            <div 
+              className="absolute w-full h-full rounded-xl overflow-hidden ring-2 ring-white/30"
+              style={{ 
+                backfaceVisibility: 'hidden',
+                transform: 'rotateY(180deg)'
+              }}
+            >
+              <div className={`absolute inset-0 ${cardBg} backdrop-blur-xl`} />
+              
+              <div className="h-full flex flex-col items-center justify-center p-6">
+                <div className="bg-white/95 rounded-lg p-1.5 ring-1 ring-black/5">
+                  <img 
+                    src="/api/placeholder/120/120"
+                    alt="QR Code"
+                    className="w-24 h-24 rounded-sm"
+                  />
+                </div>
+                <p className="mt-3 text-xs text-white/95 font-['Space_Grotesk'] bg-black/30 px-3 py-1 rounded-full backdrop-blur-sm shadow-sm">
+                  Tap to flip
+                </p>
+
+                <div className="absolute bottom-4 right-4 w-6 h-6 rounded-full bg-white/10" />
+              </div>
             </div>
           </div>
         </div>
-      </Card>
-    </main>
-  );
-};
+      </div>
 
-export default function Page() {
-  return <PeopleMovement />;
+      {/* Control Panel */}
+      <div className="bg-white/80 backdrop-blur-sm shadow-sm rounded-full px-4 py-2 flex items-center gap-8">
+        <div 
+          onClick={() => setThemeIndex((prev) => (prev + 1) % themes.length)}
+          className={`w-4 h-4 rounded-full transition-all duration-300 bg-gradient-to-br ${themes[themeIndex]} hover:scale-110 cursor-pointer ring-1 ring-black/10 hover:ring-black/20 shadow-sm`}
+        />
+        <div className="flex items-center gap-6">
+          <div className="flex items-center">
+            <span className="font-['Roboto_Mono'] text-sm font-medium tracking-tight text-gray-800/70">{ukTime}</span>
+          </div>
+          <div className="w-px h-3 bg-gray-400/20" />
+          <div className="flex items-center">
+            <span className="font-['Roboto_Mono'] text-sm font-medium tracking-tight text-gray-800/70">{esTime}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 }
