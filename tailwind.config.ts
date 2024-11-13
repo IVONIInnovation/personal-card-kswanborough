@@ -7,7 +7,7 @@ const config = {
     './components/**/*.{ts,tsx}',
     './app/**/*.{ts,tsx}',
     './src/**/*.{ts,tsx}',
-	],
+  ],
   prefix: "",
   theme: {
     container: {
@@ -18,6 +18,11 @@ const config = {
       },
     },
     extend: {
+      fontFamily: {
+        sans: ['var(--font-plus-jakarta-sans)'],
+        mono: ['var(--font-roboto-mono)'],
+        'space-grotesk': ['var(--font-space-grotesk)'],
+      },
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
@@ -76,17 +81,5 @@ const config = {
   },
   plugins: [require("tailwindcss-animate")],
 } satisfies Config
-
-module.exports = {
-  theme: {
-    extend: {
-      fontFamily: {
-        sans: ['var(--font-plus-jakarta-sans)', ...fontFamily.sans],
-        mono: ['var(--font-roboto-mono)', ...fontFamily.mono],
-        'space-grotesk': ['var(--font-space-grotesk)'],
-      },
-    },
-  },
-}
 
 export default config
