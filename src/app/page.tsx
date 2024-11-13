@@ -2,14 +2,11 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { Phone, Globe, Linkedin, Circle, ChevronRight, ChevronDown, ArrowLeft } from 'lucide-react';
-
-import React, { useState, useEffect, useRef } from 'react';
-import { Phone, Globe, Linkedin, Circle, ChevronRight, ChevronDown, ArrowLeft } from 'lucide-react';
 import { Plus_Jakarta_Sans, Space_Grotesk, Roboto_Mono } from 'next/font/google';
 
 const plusJakartaSans = Plus_Jakarta_Sans({ 
   subsets: ['latin'],
-  weight: ['500', '400'],  // adding weights we need
+  weight: ['400', '500'],
   display: 'swap',
   variable: '--font-plus-jakarta-sans',
 });
