@@ -2,22 +2,29 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { Phone, Globe, Linkedin, Circle, ChevronRight, ChevronDown, ArrowLeft } from 'lucide-react';
-import { font-plus-jakarta-sans, font-space-grotesk, font-roboto-mono } from 'next/font/google'
 
-const plusJakartaSans = font-plus-jakarta-sans({ 
+import React, { useState, useEffect, useRef } from 'react';
+import { Phone, Globe, Linkedin, Circle, ChevronRight, ChevronDown, ArrowLeft } from 'lucide-react';
+import { Plus_Jakarta_Sans, Space_Grotesk, Roboto_Mono } from 'next/font/google';
+
+const plusJakartaSans = Plus_Jakarta_Sans({ 
   subsets: ['latin'],
+  weight: ['500', '400'],  // adding weights we need
+  display: 'swap',
   variable: '--font-plus-jakarta-sans',
-})
+});
 
-const spaceGrotesk = font-space-grotesk({ 
+const spaceGrotesk = Space_Grotesk({ 
   subsets: ['latin'],
+  display: 'swap',
   variable: '--font-space-grotesk',
-})
+});
 
-const robotoMono = font-roboto-mono({ 
+const robotoMono = Roboto_Mono({ 
   subsets: ['latin'],
+  display: 'swap',
   variable: '--font-roboto-mono',
-})
+});
 
 export default function Home() {
   const [isFlipped, setIsFlipped] = useState(false);
