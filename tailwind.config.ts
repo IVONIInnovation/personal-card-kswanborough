@@ -77,4 +77,16 @@ const config = {
   plugins: [require("tailwindcss-animate")],
 } satisfies Config
 
+module.exports = {
+  theme: {
+    extend: {
+      fontFamily: {
+        sans: ['var(--font-plus-jakarta-sans)', ...fontFamily.sans],
+        mono: ['var(--font-roboto-mono)', ...fontFamily.mono],
+        'space-grotesk': ['var(--font-space-grotesk)'],
+      },
+    },
+  },
+}
+
 export default config
