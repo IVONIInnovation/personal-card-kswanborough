@@ -2,6 +2,22 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { Phone, Globe, Linkedin, Circle, ChevronRight, ChevronDown, ArrowLeft } from 'lucide-react';
+import { font-plus-jakarta-sans, font-space-grotesk, font-roboto-mono } from 'next/font/google'
+
+const plusJakartaSans = font-plus-jakarta-sans({ 
+  subsets: ['latin'],
+  variable: '--font-plus-jakarta-sans',
+})
+
+const spaceGrotesk = font-space-grotesk({ 
+  subsets: ['latin'],
+  variable: '--font-space-grotesk',
+})
+
+const robotoMono = font-roboto-mono({ 
+  subsets: ['latin'],
+  variable: '--font-roboto-mono',
+})
 
 export default function Home() {
   const [isFlipped, setIsFlipped] = useState(false);
@@ -105,7 +121,7 @@ const websites = [
   }, []);
 
 return (
-    <div className={`min-h-screen bg-gradient-to-br ${themes[themeIndex]} transition-all duration-1000 flex flex-col items-center justify-center gap-8 p-6`}>
+    <div className={`min-h-screen bg-gradient-to-br ${themes[themeIndex]} transition-all duration-1000 flex flex-col items-center justify-center gap-8 p-6 ${plusJakartaSans.variable} ${spaceGrotesk.variable} ${robotoMono.variable}`}>
       <div className="w-80 h-48 perspective-1000">
         <div 
           onClick={() => !showWebsites && setIsFlipped(!isFlipped)}
@@ -113,7 +129,8 @@ return (
           style={{ 
             transformStyle: 'preserve-3d',
             WebkitTransformStyle: 'preserve-3d',
-            transform: isFlipped ? 'rotateY(180deg)' : ''
+            transform: isFlipped ? 'rotateY(180deg)' : 'rotateY(0deg)',
+            transition: 'transform 0.6s'
           }}
         >
           {/* Front Side */}
@@ -128,15 +145,15 @@ return (
             
             <div className="relative h-full p-5">
               <div className="space-y-0.5">
-                <h1 className="text-lg font-medium tracking-tight text-white font-['Plus_Jakarta_Sans']">
+                <h1 className="text-lg font-medium tracking-tight text-white font-['font-plus-jakarta-sans']">
                   Kai Swanborough
                 </h1>
-                <p className="text-xs font-regular text-white/80 font-['Roboto_Mono'] tracking-tight">
+                <p className="text-xs font-regular text-white/80 font-['font-roboto-mono'] tracking-tight">
                   Brand Development • Design • Web
                 </p>
               </div>
 
-              <div className="mt-5 space-y-1.5 text-xs text-white/90 font-['Space_Grotesk']">
+              <div className="mt-5 space-y-1.5 text-xs text-white/90 font-['font-space-grotesk']">
                 <div 
                   className="flex items-center gap-2 cursor-pointer hover:text-white transition-colors"
                   onClick={(e) => handleLinkClick(e, 'tel:+447592660717')}
@@ -171,7 +188,7 @@ return (
 
             {/* Website Grid Overlay */}
             <div 
-              className={`absolute inset-0 bg-gradient-to-br from-gray-800/90 to-gray-900/90 backdrop-blur-xl rounded-xl transition-all duration-300 ${
+              className={`absolute inset-0 bg-gradient-to-br from-gray-800/95 to-gray-900/95 backdrop-blur-2xl rounded-xl transition-all duration-300 ${
                 showWebsites ? 'opacity-100' : 'opacity-0 pointer-events-none'
               }`}
               onClick={(e) => e.stopPropagation()}
@@ -190,12 +207,12 @@ return (
                           <div className="flex items-center justify-between gap-3">
                             <div className="flex items-center gap-3">
                               <Circle className="w-1.5 h-1.5 text-white/40" />
-                              <span className="text-sm text-white font-['Space_Grotesk']">{site.name}</span>
+                              <span className="text-sm text-white font-['font-space-grotesk']">{site.name}</span>
                               {site.links.map((link, j) => (
                                 <span
                                   key={j}
                                   onClick={(e) => handleLinkClick(e, link.url)}
-                                  className="text-sm text-white/70 font-['Space_Grotesk'] hover:text-white/90 transition-colors cursor-pointer"
+                                  className="text-sm text-white/70 font-['font-space-grotesk'] hover:text-white/90 transition-colors cursor-pointer"
                                 >
                                   {link.text}
                                 </span>
@@ -203,7 +220,7 @@ return (
                             </div>
                             <div className="flex items-center gap-2">
                               <ChevronRight className="w-3 h-3 text-white/30" />
-                              <span className="text-xs text-white/50 font-['Space_Grotesk']">{site.description}</span>
+                              <span className="text-xs text-white/50 font-['font-space-grotesk']">{site.description}</span>
                             </div>
                           </div>
                         ) : (
@@ -213,11 +230,11 @@ return (
                           >
                             <div className="flex items-center gap-3">
                               <Circle className="w-1.5 h-1.5 text-white/40" />
-                              <span className="text-sm text-white font-['Space_Grotesk'] group-hover:text-white/80 transition-colors">{site.name}</span>
+                              <span className="text-sm text-white font-['font-space-grotesk'] group-hover:text-white/80 transition-colors">{site.name}</span>
                             </div>
                             <div className="flex items-center gap-2">
                               <ChevronRight className="w-3 h-3 text-white/30 group-hover:text-white/50 transition-colors" />
-                              <span className="text-xs text-white/50 font-['Space_Grotesk'] group-hover:text-white/70 transition-colors">{site.description}</span>
+                              <span className="text-xs text-white/50 font-['font-space-grotesk'] group-hover:text-white/70 transition-colors">{site.description}</span>
                             </div>
                           </div>
                         )}
@@ -238,11 +255,11 @@ return (
                       >
                         <div className="flex items-center gap-3">
                           <Circle className="w-1.5 h-1.5 text-white/20" />
-                          <span className="text-sm text-white/70 font-['Space_Grotesk'] group-hover:text-white/90 transition-colors">{site.name}</span>
+                          <span className="text-sm text-white/70 font-['font-space-grotesk'] group-hover:text-white/90 transition-colors">{site.name}</span>
                         </div>
                         <div className="flex items-center gap-2">
                           <ChevronRight className="w-3 h-3 text-white/20 group-hover:text-white/40 transition-colors" />
-                          <span className="text-xs text-white/40 font-['Space_Grotesk'] group-hover:text-white/60 transition-colors">{site.description}</span>
+                          <span className="text-xs text-white/40 font-['font-space-grotesk'] group-hover:text-white/60 transition-colors">{site.description}</span>
                         </div>
                       </div>
                     ))}
@@ -289,7 +306,7 @@ return (
                     className="w-24 h-24 rounded-sm"
                   />
                 </div>
-                <p className="mt-3 text-xs text-white/95 font-['Space_Grotesk'] bg-black/30 px-3 py-1 rounded-full backdrop-blur-sm shadow-sm">
+                <p className="mt-3 text-xs text-white/95 font-['font-space-grotesk'] bg-black/30 px-3 py-1 rounded-full backdrop-blur-sm shadow-sm">
                   Tap to flip
                 </p>
 
@@ -308,11 +325,11 @@ return (
         />
         <div className="flex items-center gap-6">
           <div className="flex items-center">
-            <span className="font-['Roboto_Mono'] text-sm font-medium tracking-tight text-gray-800/70">{ukTime}</span>
+            <span className="font-['font-roboto-mono'] text-sm font-medium tracking-tight text-gray-800/70">{ukTime}</span>
           </div>
           <div className="w-px h-3 bg-gray-400/20" />
           <div className="flex items-center">
-            <span className="font-['Roboto_Mono'] text-sm font-medium tracking-tight text-gray-800/70">{esTime}</span>
+            <span className="font-['font-roboto-mono'] text-sm font-medium tracking-tight text-gray-800/70">{esTime}</span>
           </div>
         </div>
       </div>
