@@ -21,15 +21,15 @@ const robotoMono = Roboto_Mono({
   weight: ['400'],
   variable: '--font-roboto-mono',
 });
-
 export default function Home() {
-  const [isFlipped, setIsFlipped] = useState(false);
+  const [isSpinning, setIsSpinning] = useState(false);
   const [showWebsites, setShowWebsites] = useState(false);
   const [themeIndex, setThemeIndex] = useState(0);
   const [ukTime, setUkTime] = useState('');
   const [esTime, setEsTime] = useState('');
   const [showScrollIndicator, setShowScrollIndicator] = useState(true);
   const websitesRef = useRef(null);
+  const spinTimeoutRef = useRef(null);
 
   const themes = [
     'from-gray-200 via-gray-100 to-gray-200',
@@ -42,8 +42,7 @@ export default function Home() {
   const cardBg = themeIndex === 0 
     ? 'bg-gradient-to-br from-gray-600/80 to-gray-700/80' 
     : 'bg-gradient-to-br from-white/10 to-white/20';
-
-const websites = [
+  const websites = [
     {
       name: 'kaiswanborough.com',
       description: 'Freelance',
@@ -91,7 +90,6 @@ const websites = [
       priority: 2
     }
   ];
-
   const handleLinkClick = (e: React.MouseEvent, url: string) => {
     e.stopPropagation();
     window.open(url, '_blank');
@@ -113,6 +111,19 @@ const websites = [
     }
   };
 
+  const handleCardClick = () => {
+    if (!showWebsites && !isSpinning) {
+      setIsSpinning(true);
+      // Clear any existing timeout
+      if (spinTimeoutRef.current) {
+        clearTimeout(spinTimeoutRef.current);
+      }
+      // Set timeout to remove spinning class after animation
+      spinTimeoutRef.current = setTimeout(() => {
+        setIsSpinning(false);
+      }, 500); // Match this with the CSS animation duration
+    }
+  };
   useEffect(() => {
     const updateTimes = () => {
       setUkTime(new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', timeZone: 'Europe/London' }));
@@ -123,17 +134,24 @@ const websites = [
     return () => clearInterval(interval);
   }, []);
 
-return (
+  useEffect(() => {
+    return () => {
+      if (spinTimeoutRef.current) {
+        clearTimeout(spinTimeoutRef.current);
+      }
+    };
+  }, []);
+  return (
     <div className={`min-h-screen bg-gradient-to-br ${themes[themeIndex]} transition-all duration-1000 flex flex-col items-center justify-center gap-8 p-6 ${plusJakartaSans.variable} ${spaceGrotesk.variable} ${robotoMono.variable}`}>
       <div className="w-80 h-48 [perspective:1000px]">
         <div 
-          onClick={() => !showWebsites && setIsFlipped(!isFlipped)}
+          onClick={handleCardClick}
           className={`relative w-full h-full cursor-pointer transition-transform duration-500 [transform-style:preserve-3d] ${
-            isFlipped ? '[transform:rotateY(180deg)]' : '[transform:rotateY(0deg)]'
+            isSpinning ? '[transform:rotateY(360deg)]' : '[transform:rotateY(0deg)]'
           }`}
         >
           {/* Front Side */}
-          <div className="absolute w-full h-full rounded-xl overflow-hidden ring-2 ring-white/30 [backface-visibility:hidden]">
+          <div className="absolute w-full h-full rounded-xl overflow-hidden ring-2 ring-white/30">
             <div className={`absolute inset-0 ${cardBg} backdrop-blur-xl`} />
             
             <div className="relative h-full p-5">
@@ -178,7 +196,6 @@ return (
 
               <div className="absolute bottom-4 right-4 w-6 h-6 rounded-full bg-white/10" />
             </div>
-
             {/* Website Grid Overlay */}
             <div 
               className={`absolute inset-0 bg-gradient-to-br from-gray-800/95 to-gray-900/95 backdrop-blur-2xl rounded-xl transition-all duration-300 ${
@@ -260,7 +277,7 @@ return (
                 </div>
               </div>
 
-              {/* Enhanced scroll indicator with shorter blur effect */}
+              {/* Scroll indicator */}
               <div className={`absolute bottom-0 left-0 right-0 h-8 pointer-events-none transition-opacity duration-300 ${showScrollIndicator ? 'opacity-100' : 'opacity-0'}`}>
                 <div className="absolute inset-0 bg-gradient-to-t from-gray-900 via-gray-900/20 to-transparent" />
                 <div className="absolute bottom-2 left-1/2 -translate-x-1/2">
@@ -271,7 +288,7 @@ return (
                 </div>
               </div>
 
-              {/* Back arrow button */}
+              {/* Back button */}
               <button 
                 onClick={() => setShowWebsites(false)}
                 className="absolute top-3 left-3 p-1.5 rounded-lg bg-white/5 hover:bg-white/10 backdrop-blur-sm transition-colors"
@@ -279,30 +296,9 @@ return (
                 <ArrowLeft className="w-4 h-4 text-white/70" />
               </button>
             </div>
-
-            {/* Back Side */}
-            <div className="absolute w-full h-full rounded-xl overflow-hidden ring-2 ring-white/30 [backface-visibility:hidden] [transform:rotateY(180deg)]">
-              <div className={`absolute inset-0 ${cardBg} backdrop-blur-xl`} />
-              
-              <div className="h-full flex flex-col items-center justify-center p-6">
-                <div className="bg-white/95 rounded-lg p-1.5 ring-1 ring-black/5">
-                  <img 
-                    src="/api/placeholder/120/120"
-                    alt="QR Code"
-                    className="w-24 h-24 rounded-sm"
-                  />
-                </div>
-                <p className="mt-3 text-xs text-white/95 font-['font-space-grotesk'] bg-black/30 px-3 py-1 rounded-full backdrop-blur-sm shadow-sm">
-                  Tap to flip
-                </p>
-
-                <div className="absolute bottom-4 right-4 w-6 h-6 rounded-full bg-white/10" />
-              </div>
-            </div>
           </div>
         </div>
       </div>
-
       {/* Control Panel */}
       <div className="bg-white/80 backdrop-blur-sm shadow-sm rounded-full px-4 py-2 flex items-center gap-8">
         <div 
