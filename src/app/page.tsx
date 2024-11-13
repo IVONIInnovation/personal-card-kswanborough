@@ -112,13 +112,17 @@ return (
           className="relative w-full h-full duration-500 cursor-pointer"
           style={{ 
             transformStyle: 'preserve-3d',
+            WebkitTransformStyle: 'preserve-3d',
             transform: isFlipped ? 'rotateY(180deg)' : ''
           }}
         >
           {/* Front Side */}
           <div 
             className="absolute w-full h-full rounded-xl overflow-hidden ring-2 ring-white/30"
-            style={{ backfaceVisibility: 'hidden' }}
+            style={{ 
+              backfaceVisibility: 'hidden',
+              WebkitBackfaceVisibility: 'hidden'
+            }}
           >
             <div className={`absolute inset-0 ${cardBg} backdrop-blur-xl`} />
             
@@ -271,6 +275,7 @@ return (
               className="absolute w-full h-full rounded-xl overflow-hidden ring-2 ring-white/30"
               style={{ 
                 backfaceVisibility: 'hidden',
+                WebkitBackfaceVisibility: 'hidden',
                 transform: 'rotateY(180deg)'
               }}
             >
