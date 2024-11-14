@@ -22,8 +22,8 @@ const robotoMono = Roboto_Mono({
 });
 
 export const metadata: Metadata = {
-  title: 'Rambla Map - PortalDiseño',
-  description: 'PortalDiseño.es',
+  title: 'Digital Card - KSwanborough',
+  description: 'kaiswanborough.com',
 };
 
 export default function RootLayout({
