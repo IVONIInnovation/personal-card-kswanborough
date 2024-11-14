@@ -42,7 +42,6 @@ const robotoMono = Roboto_Mono({
 type View = 'home' | 'about' | 'share' | 'contact';
 type Location = 'UK' | 'ES' | null;
 type Language = 'en' | 'es' | 'cat';
-
 export default function Home() {
   const [isSpinning, setIsSpinning] = useState(false);
   const [showWebsites, setShowWebsites] = useState(false);
@@ -57,6 +56,7 @@ export default function Home() {
   const [copied, setCopied] = useState(false);
   const websitesRef = useRef(null);
   const spinTimeoutRef = useRef(null);
+
   const themes = [
     'from-gray-200 via-gray-100 to-gray-200',
     'from-zinc-800 to-zinc-900',
@@ -199,13 +199,11 @@ export default function Home() {
   };
 
   const handleViewChange = (view: View) => {
+    setIsMenuOpen(false);
     setIsSpinning(true);
     setTimeout(() => {
       setCurrentView(view);
       setIsSpinning(false);
-      if (view === 'contact') {
-        setCurrentView('home');
-      }
     }, 300);
   };
 
@@ -235,124 +233,169 @@ export default function Home() {
       console.error('Failed to copy link:', err);
     }
   };
-  const ShareView = () => {
-    return (
-      <div className="h-full p-5 flex flex-col items-center justify-center space-y-4">
-        <button 
-          onClick={() => handleViewChange('home')}
-          className="absolute top-3 left-3 p-1.5 rounded-lg bg-white/5 hover:bg-white/10 backdrop-blur-sm transition-colors"
-        >
-          <ArrowLeft className="w-4 h-4 text-white/70" />
-        </button>
+
+  const ShareView = () => (
+    <div className="h-full p-5 flex flex-col items-center justify-center">
+      <button 
+        onClick={() => handleViewChange('home')}
+        className="absolute top-3 left-3 p-1.5 rounded-lg bg-white/5 hover:bg-white/10 backdrop-blur-sm transition-colors"
+      >
+        <ArrowLeft className="w-4 h-4 text-white/70" />
+      </button>
+      
+      <div className="text-center space-y-4">
+        <div className="space-y-2">
+          <h2 className="text-lg font-medium text-white">
+            {translations[currentLanguage].shareProfile}
+          </h2>
+          <p className="text-xs text-white/70">{window.location.href}</p>
+        </div>
         
-        <div className="text-center space-y-6">
-          <div className="space-y-2">
-            <h2 className="text-lg font-medium text-white">
-              {translations[currentLanguage].shareProfile}
-            </h2>
-            <p className="text-sm text-white/70">{window.location.href}</p>
-          </div>
-          
-          <button
-            onClick={handleShareLink}
-            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white/10 hover:bg-white/20 transition-colors"
-          >
-            <ExternalLink className="w-4 h-4 text-white/70" />
-            <span className="text-sm text-white/90">
-              {copied 
-                ? translations[currentLanguage].linkCopied 
-                : translations[currentLanguage].copyLink}
-            </span>
-          </button>
-        </div>
-      </div>
-    );
-  };
-
-  const AboutView = () => {
-    return (
-      <div className="h-full p-5">
-        <button 
-          onClick={() => handleViewChange('home')}
-          className="absolute top-3 left-3 p-1.5 rounded-lg bg-white/5 hover:bg-white/10 backdrop-blur-sm transition-colors"
+        <button
+          onClick={handleShareLink}
+          className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 transition-colors text-xs"
         >
-          <ArrowLeft className="w-4 h-4 text-white/70" />
+          <ExternalLink className="w-3 h-3 text-white/70" />
+          <span className="text-white/90">
+            {copied 
+              ? translations[currentLanguage].linkCopied 
+              : translations[currentLanguage].copyLink}
+          </span>
         </button>
+      </div>
+    </div>
+  );
 
-        <div className="space-y-4">
-          <div className="flex justify-between">
-            <div className="space-y-0.5">
-              <h1 className="text-lg font-medium tracking-tight text-white font-plus-jakarta-sans">
-                Kai Swanborough
-              </h1>
-              <p className="text-xs font-regular text-white/80 font-roboto-mono tracking-tight">
-                {translations[currentLanguage].title}
-              </p>
-            </div>
+  const AboutView = () => (
+    <div className="h-full p-5">
+      <button 
+        onClick={() => handleViewChange('home')}
+        className="absolute top-3 left-3 p-1.5 rounded-lg bg-white/5 hover:bg-white/10 backdrop-blur-sm transition-colors"
+      >
+        <ArrowLeft className="w-4 h-4 text-white/70" />
+      </button>
 
-            <div className="w-24 h-24 rounded-xl overflow-hidden">
-              <img
-                src="/profile-image.jpg"
-                alt="Kai Swanborough"
-                className="w-full h-full object-cover"
-              />
-            </div>
+      <div className="space-y-4">
+        <div className="flex justify-between">
+          <div className="space-y-0.5">
+            <h1 className="text-lg font-medium tracking-tight text-white font-plus-jakarta-sans">
+              Kai Swanborough
+            </h1>
+            <p className="text-xs font-regular text-white/80 font-roboto-mono tracking-tight">
+              {translations[currentLanguage].title}
+            </p>
           </div>
 
-          <div className="text-xs text-white/90 font-space-grotesk">
-            <div className="flex items-center gap-6">
-              <div className="flex items-center gap-2">
-                <MapPin className="w-3 h-3" />
-                <span>{translations[currentLanguage].location.uk}</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <span>{translations[currentLanguage].location.es}</span>
-              </div>
-            </div>
+          <div className="w-20 h-20 rounded-xl overflow-hidden">
+            <img
+              src="/profile-image.jpg"
+              alt="Kai Swanborough"
+              className="w-full h-full object-cover"
+            />
           </div>
+        </div>
 
-          <div className="mt-4 h-32 overflow-y-auto pr-2 space-y-2">
-            <div className="flex items-center justify-between py-2 px-3 bg-white/5 rounded-lg">
-              <span className="text-xs text-white/70">BeVisioneers: Mercedes-Benz Fellowship</span>
-              <span className="text-xs text-white/50">Fellow 24/25</span>
+        <div className="text-xs text-white/90 font-space-grotesk">
+          <div className="flex items-center gap-6">
+            <div className="flex items-center gap-2">
+              <MapPin className="w-3 h-3" />
+              <span>{translations[currentLanguage].location.uk}</span>
             </div>
-            <div className="flex items-center justify-between py-2 px-3 bg-white/5 rounded-lg">
-              <span className="text-xs text-white/70">ADG-FAD</span>
-              <span className="text-xs text-white/50">Member</span>
+            <div className="flex items-center gap-2">
+              <span>{translations[currentLanguage].location.es}</span>
             </div>
           </div>
         </div>
+
+        <div className="h-40 overflow-y-auto pr-2 space-y-1.5">
+          <div className="flex items-center justify-between py-1.5 px-3 bg-white/5 rounded-lg">
+            <span className="text-xs text-white/70">BeVisioneers: Mercedes-Benz Fellowship</span>
+            <span className="text-xs text-white/50">Fellow 24/25</span>
+          </div>
+          <div className="flex items-center justify-between py-1.5 px-3 bg-white/5 rounded-lg">
+            <span className="text-xs text-white/70">ADG-FAD</span>
+            <span className="text-xs text-white/50">Member</span>
+          </div>
+        </div>
       </div>
-    );
-  };
-  const MenuPanel = () => {
-    return (
+    </div>
+  );
+
+  const ContactView = () => (
+    <div className="h-full p-5">
+      <button 
+        onClick={() => handleViewChange('home')}
+        className="absolute top-3 left-3 p-1.5 rounded-lg bg-white/5 hover:bg-white/10 backdrop-blur-sm transition-colors"
+      >
+        <ArrowLeft className="w-4 h-4 text-white/70" />
+      </button>
+
+      <div className="space-y-0.5 mb-5">
+        <h1 className="text-lg font-medium tracking-tight text-white font-plus-jakarta-sans">
+          Kai Swanborough
+        </h1>
+        <p className="text-xs font-regular text-white/80 font-roboto-mono tracking-tight">
+          {translations[currentLanguage].title}
+        </p>
+      </div>
+
+      <div className="space-y-1.5 text-xs text-white/90 font-space-grotesk">
+        <div 
+          className="flex items-center gap-2 cursor-pointer hover:text-white transition-colors"
+          onClick={(e) => handleLinkClick(e, 'tel:+447592660717')}
+        >
+          <Phone className="w-3 h-3" />
+          <span>UK (+44) 7592 660717</span>
+        </div>
+        <div 
+          className="flex items-center gap-2 ml-5 cursor-pointer hover:text-white transition-colors"
+          onClick={(e) => handleLinkClick(e, 'tel:+34649058386')}
+        >
+          <span>ES (+34) 649 058 386</span>
+        </div>
+        <div 
+          className="flex items-center gap-2 cursor-pointer hover:text-white transition-colors"
+          onClick={(e) => handleLinkClick(e, 'https://kaiswanborough.com')}
+        >
+          <Globe className="w-3 h-3" />
+          <span>kaiswanborough.com</span>
+        </div>
+        <div 
+          className="flex items-center gap-2 cursor-pointer hover:text-white transition-colors"
+          onClick={(e) => handleLinkClick(e, 'https://linkedin.com/in/kaiswanborough')}
+        >
+          <Linkedin className="w-3 h-3" />
+          <span>in/kaiswanborough</span>
+        </div>
+      </div>
+    </div>
+  );
+
+  const MenuPanel = () => (
+    <div 
+      className={`absolute inset-0 ${
+        isMenuOpen ? 'pointer-events-auto' : 'pointer-events-none'
+      }`}
+    >
       <div 
-        className={`absolute inset-0 ${
-          isMenuOpen ? 'pointer-events-auto' : 'pointer-events-none'
+        className={`absolute right-5 top-1/2 -translate-y-1/2 transition-transform duration-300 ${
+          isMenuOpen ? 'translate-x-0' : 'translate-x-full'
         }`}
       >
-        <div 
-          className={`absolute right-5 top-1/2 -translate-y-1/2 transition-transform duration-300 ${
-            isMenuOpen ? 'translate-x-0' : 'translate-x-full'
-          }`}
-        >
-          <div className="flex items-center gap-4">
-            {['about', 'share', 'contact'].map((view) => (
-              <button
-                key={view}
-                onClick={() => handleViewChange(view as View)}
-                className="text-sm text-white/90 hover:text-white transition-colors"
-              >
-                {translations[currentLanguage][view as keyof typeof translations[typeof currentLanguage]]}
-              </button>
-            ))}
-          </div>
+        <div className="flex items-center gap-4">
+          {['about', 'share', 'contact'].map((view) => (
+            <button
+              key={view}
+              onClick={() => handleViewChange(view as View)}
+              className="text-sm text-white/90 hover:text-white transition-colors"
+            >
+              {translations[currentLanguage][view as keyof typeof translations[typeof currentLanguage]]}
+            </button>
+          ))}
         </div>
       </div>
-    );
-  };
-
+    </div>
+  );
   useEffect(() => {
     const updateTimes = () => {
       setUkTime(new Date().toLocaleTimeString('en-GB', { 
@@ -378,6 +421,7 @@ export default function Home() {
       }
     };
   }, []);
+
   return (
     <div className={`min-h-screen bg-gradient-to-br ${themes[themeIndex]} transition-all duration-1000 flex flex-col items-center justify-center gap-8 p-6 ${plusJakartaSans.variable} ${spaceGrotesk.variable} ${robotoMono.variable} font-sans`}>
       <div className="w-80 h-48 [perspective:1000px]">
@@ -438,6 +482,7 @@ export default function Home() {
 
               {currentView === 'about' && <AboutView />}
               {currentView === 'share' && <ShareView />}
+              {currentView === 'contact' && <ContactView />}
 
               {/* Website Grid Overlay */}
               <div 
