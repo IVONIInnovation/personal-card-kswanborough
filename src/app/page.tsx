@@ -189,12 +189,10 @@ export default function Home() {
     setIsMenuOpen(false);
     if (currentView !== view) {
       setIsFlipping(true);
+      setCurrentView(view);
       setTimeout(() => {
-        setCurrentView(view);
-        setTimeout(() => {
-          setIsFlipping(false);
-        }, 300);
-      }, 150);
+        setIsFlipping(false);
+      }, 300);
     }
   };
 
@@ -351,18 +349,21 @@ export default function Home() {
   );
 
   const MenuPanel = () => (
-    <div className="flex items-center gap-4">
-      {['about', 'share', 'contact'].map((view) => (
-        <button
-          key={view}
-          onClick={() => handleViewChange(view as View)}
-          className="text-sm text-white/90 hover:text-white transition-colors"
-        >
-          {translations[currentLanguage][view as keyof typeof translations[typeof currentLanguage]]}
-        </button>
-      ))}
+    <div className="w-full flex items-center justify-center">
+      <div className="flex items-center gap-4">
+        {['about', 'share', 'contact'].map((view) => (
+          <button
+            key={view}
+            onClick={() => handleViewChange(view as View)}
+            className="text-xs text-gray-800/70 hover:text-gray-800 transition-colors"
+          >
+            {translations[currentLanguage][view as keyof typeof translations[typeof currentLanguage]]}
+          </button>
+        ))}
+      </div>
     </div>
   );
+
   useEffect(() => {
     const updateTimes = () => {
       setUkTime(new Date().toLocaleTimeString('en-GB', { 
@@ -388,13 +389,12 @@ export default function Home() {
       }
     };
   }, []);
-
   return (
     <div className={`min-h-screen bg-gradient-to-br ${themes[themeIndex]} transition-all duration-1000 flex flex-col items-center justify-center gap-8 p-6 ${plusJakartaSans.variable} ${spaceGrotesk.variable} ${robotoMono.variable} font-sans`}>
       <div className="w-80 h-48 [perspective:1000px]">
         <div 
           className={`relative w-full h-full transition-all duration-300 ease-in-out [transform-style:preserve-3d] ${
-            isFlipping ? '[transform:rotateY(180deg)]' : '[transform:rotateY(0deg)]'
+            isFlipping ? '[transform:rotateY(90deg)]' : '[transform:rotateY(0deg)]'
           }`}
         >
           <div className="absolute w-full h-full rounded-xl overflow-hidden ring-2 ring-white/30">
@@ -580,8 +580,7 @@ export default function Home() {
               >
                 <span className="font-roboto-mono text-sm font-medium tracking-tight text-gray-800/70">{esTime}</span>
                 {showLocation === 'ES' && (
-                  <div className="absolute -top-8 left-1/2 -translate-x-1/2
-                    px-2 py-1 bg-black/80 text-white text-xs rounded-md whitespace-nowrap flex items-center gap-1">
+                  <div className="absolute -top-8 left-1/2 -translate-x-1/2 px-2 py-1 bg-black/80 text-white text-xs rounded-md whitespace-nowrap flex items-center gap-1">
                     <MapPin className="w-3 h-3" />
                     <span>{translations[currentLanguage].location.es}</span>
                   </div>
