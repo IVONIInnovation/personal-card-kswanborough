@@ -9,7 +9,6 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "qrcode.react": "^3.1.0"
     "@phosphor-icons/react": "^2.1.7",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
@@ -21,6 +20,7 @@
     "recharts": "^2.12.7",
     "tailwind-merge": "^2.4.0",
     "tailwindcss-animate": "^1.0.7"
+    "qrcode.react": "^3.1.0"
   },
   "devDependencies": {
     "@types/node": "^20",
