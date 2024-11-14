@@ -14,7 +14,8 @@ import {
   Share2,
   Info,
   X,
-  ExternalLink 
+  ExternalLink,
+  Mail as MailIcon // Updated this line
 } from 'lucide-react';
 import { Plus_Jakarta_Sans, Space_Grotesk, Roboto_Mono } from 'next/font/google';
 
@@ -334,7 +335,7 @@ const ContactView = () => (
           className="flex items-center gap-2 cursor-pointer hover:text-white transition-colors"
           onClick={(e) => handleLinkClick(e, 'mailto:kai@kswanborough.com')}
         >
-          <Mail className="w-3 h-3" />
+          <MailIcon className="w-3 h-3" />
           <span>kai@kswanborough.com</span>
         </div>
       </div>
