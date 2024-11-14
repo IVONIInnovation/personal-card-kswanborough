@@ -38,6 +38,7 @@ const robotoMono = Roboto_Mono({
   weight: ['400'],
   variable: '--font-roboto-mono',
 });
+
 type View = 'home' | 'about' | 'share' | 'contact';
 type Location = 'UK' | 'ES' | null;
 type Language = 'en' | 'es' | 'cat';
@@ -115,6 +116,7 @@ export default function Home() {
       }
     }
   };
+
   const websites = [
     {
       name: 'kaiswanborough.com',
@@ -233,31 +235,6 @@ export default function Home() {
       console.error('Failed to copy link:', err);
     }
   };
-  useEffect(() => {
-    const updateTimes = () => {
-      setUkTime(new Date().toLocaleTimeString('en-GB', { 
-        hour: '2-digit', 
-        minute: '2-digit', 
-        timeZone: 'Europe/London' 
-      }));
-      setEsTime(new Date().toLocaleTimeString('en-GB', { 
-        hour: '2-digit', 
-        minute: '2-digit', 
-        timeZone: 'Europe/Madrid' 
-      }));
-    };
-    updateTimes();
-    const interval = setInterval(updateTimes, 60000);
-    return () => clearInterval(interval);
-  }, []);
-
-  useEffect(() => {
-    return () => {
-      if (spinTimeoutRef.current) {
-        clearTimeout(spinTimeoutRef.current);
-      }
-    };
-  }, []);
   const ShareView = () => {
     return (
       <div className="h-full p-5 flex flex-col items-center justify-center space-y-4">
@@ -302,8 +279,8 @@ export default function Home() {
           <ArrowLeft className="w-4 h-4 text-white/70" />
         </button>
 
-        <div className="flex justify-between">
-          <div className="space-y-4">
+        <div className="space-y-4">
+          <div className="flex justify-between">
             <div className="space-y-0.5">
               <h1 className="text-lg font-medium tracking-tight text-white font-plus-jakarta-sans">
                 Kai Swanborough
@@ -313,65 +290,94 @@ export default function Home() {
               </p>
             </div>
 
-            <div className="space-y-2 text-xs text-white/90 font-space-grotesk">
+            <div className="w-24 h-24 rounded-xl overflow-hidden">
+              <img
+                src="/profile-image.jpg"
+                alt="Kai Swanborough"
+                className="w-full h-full object-cover"
+              />
+            </div>
+          </div>
+
+          <div className="text-xs text-white/90 font-space-grotesk">
+            <div className="flex items-center gap-6">
               <div className="flex items-center gap-2">
                 <MapPin className="w-3 h-3" />
                 <span>{translations[currentLanguage].location.uk}</span>
               </div>
-              <div className="flex items-center gap-2 ml-5">
+              <div className="flex items-center gap-2">
                 <span>{translations[currentLanguage].location.es}</span>
-              </div>
-              
-              <div className="pt-2 space-y-2">
-                <div className="flex items-center justify-between">
-                  <span className="text-white/70">BeVisioneers: Mercedes-Benz Fellowship</span>
-                  <span className="text-white/50">Fellow 24/25</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-white/70">ADG-FAD</span>
-                  <span className="text-white/50">Member</span>
-                </div>
               </div>
             </div>
           </div>
 
-          <div className="w-24 h-24 rounded-xl overflow-hidden">
-            <img
-              src="/profile-image.jpg"
-              alt="Kai Swanborough"
-              className="w-full h-full object-cover"
-            />
+          <div className="mt-4 h-32 overflow-y-auto pr-2 space-y-2">
+            <div className="flex items-center justify-between py-2 px-3 bg-white/5 rounded-lg">
+              <span className="text-xs text-white/70">BeVisioneers: Mercedes-Benz Fellowship</span>
+              <span className="text-xs text-white/50">Fellow 24/25</span>
+            </div>
+            <div className="flex items-center justify-between py-2 px-3 bg-white/5 rounded-lg">
+              <span className="text-xs text-white/70">ADG-FAD</span>
+              <span className="text-xs text-white/50">Member</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+  const MenuPanel = () => {
+    return (
+      <div 
+        className={`absolute inset-0 ${
+          isMenuOpen ? 'pointer-events-auto' : 'pointer-events-none'
+        }`}
+      >
+        <div 
+          className={`absolute right-5 top-1/2 -translate-y-1/2 transition-transform duration-300 ${
+            isMenuOpen ? 'translate-x-0' : 'translate-x-full'
+          }`}
+        >
+          <div className="flex items-center gap-4">
+            {['about', 'share', 'contact'].map((view) => (
+              <button
+                key={view}
+                onClick={() => handleViewChange(view as View)}
+                className="text-sm text-white/90 hover:text-white transition-colors"
+              >
+                {translations[currentLanguage][view as keyof typeof translations[typeof currentLanguage]]}
+              </button>
+            ))}
           </div>
         </div>
       </div>
     );
   };
 
-  const MenuPanel = () => {
-    return (
-      <div 
-        className={`absolute inset-y-0 right-0 flex items-center transition-transform duration-300 ${
-          isMenuOpen ? 'translate-x-0' : 'translate-x-full'
-        }`}
-      >
-        <div className="bg-white/80 backdrop-blur-sm rounded-full p-2 flex items-center gap-4">
-          {['about', 'share', 'contact'].map((view) => (
-            <button
-              key={view}
-              onClick={() => handleViewChange(view as View)}
-              className={`px-3 py-1.5 rounded-full transition-colors ${
-                currentView === view ? 'bg-black/10' : 'hover:bg-black/5'
-              }`}
-            >
-              <span className="text-sm font-medium text-gray-800">
-                {translations[currentLanguage][view as keyof typeof translations[typeof currentLanguage]]}
-              </span>
-            </button>
-          ))}
-        </div>
-      </div>
-    );
-  };
+  useEffect(() => {
+    const updateTimes = () => {
+      setUkTime(new Date().toLocaleTimeString('en-GB', { 
+        hour: '2-digit', 
+        minute: '2-digit', 
+        timeZone: 'Europe/London' 
+      }));
+      setEsTime(new Date().toLocaleTimeString('en-GB', { 
+        hour: '2-digit', 
+        minute: '2-digit', 
+        timeZone: 'Europe/Madrid' 
+      }));
+    };
+    updateTimes();
+    const interval = setInterval(updateTimes, 60000);
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      if (spinTimeoutRef.current) {
+        clearTimeout(spinTimeoutRef.current);
+      }
+    };
+  }, []);
   return (
     <div className={`min-h-screen bg-gradient-to-br ${themes[themeIndex]} transition-all duration-1000 flex flex-col items-center justify-center gap-8 p-6 ${plusJakartaSans.variable} ${spaceGrotesk.variable} ${robotoMono.variable} font-sans`}>
       <div className="w-80 h-48 [perspective:1000px]">
@@ -381,7 +387,6 @@ export default function Home() {
             isSpinning ? '[transform:rotateY(360deg)]' : '[transform:rotateY(0deg)]'
           }`}
         >
-          {/* Card Content */}
           <div className="absolute w-full h-full rounded-xl overflow-hidden ring-2 ring-white/30">
             <div className={`absolute inset-0 ${cardBg} backdrop-blur-xl`} />
             
@@ -427,7 +432,7 @@ export default function Home() {
                     </div>
                   </div>
 
-                  <div className="absolute bottom-4 right-4 w-6 h-6 rounded-full bg-white/10" />
+                  <MenuPanel />
                 </div>
               )}
 
@@ -576,8 +581,6 @@ export default function Home() {
             </div>
           </>
         )}
-
-        <MenuPanel />
 
         <button
           onClick={handleMenuToggle}
