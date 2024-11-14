@@ -43,7 +43,7 @@ type View = 'home' | 'about' | 'share' | 'contact';
 type Location = 'UK' | 'ES' | null;
 type Language = 'en' | 'es' | 'cat';
 export default function Home() {
-  const [isSpinning, setIsSpinning] = useState(false);
+  const [isFlipping, setIsFlipping] = useState(false);
   const [showWebsites, setShowWebsites] = useState(false);
   const [themeIndex, setThemeIndex] = useState(0);
   const [ukTime, setUkTime] = useState('');
@@ -55,7 +55,7 @@ export default function Home() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [copied, setCopied] = useState(false);
   const websitesRef = useRef(null);
-  const spinTimeoutRef = useRef(null);
+  const flipTimeoutRef = useRef(null);
 
   const themes = [
     'from-gray-200 via-gray-100 to-gray-200',
@@ -68,7 +68,6 @@ export default function Home() {
   const cardBg = themeIndex === 0 
     ? 'bg-gradient-to-br from-gray-600/80 to-gray-700/80' 
     : 'bg-gradient-to-br from-white/10 to-white/20';
-
   const translations = {
     en: {
       title: 'Brand Development • Design • Web',
@@ -186,25 +185,17 @@ export default function Home() {
     }
   };
 
-  const handleCardClick = () => {
-    if (!showWebsites && !isSpinning) {
-      setIsSpinning(true);
-      if (spinTimeoutRef.current) {
-        clearTimeout(spinTimeoutRef.current);
-      }
-      spinTimeoutRef.current = setTimeout(() => {
-        setIsSpinning(false);
-      }, 300);
-    }
-  };
-
   const handleViewChange = (view: View) => {
     setIsMenuOpen(false);
-    setIsSpinning(true);
-    setTimeout(() => {
-      setCurrentView(view);
-      setIsSpinning(false);
-    }, 300);
+    if (currentView !== view) {
+      setIsFlipping(true);
+      setTimeout(() => {
+        setCurrentView(view);
+        setTimeout(() => {
+          setIsFlipping(false);
+        }, 300);
+      }, 150);
+    }
   };
 
   const handleTimeClick = (location: Location) => {
@@ -233,7 +224,6 @@ export default function Home() {
       console.error('Failed to copy link:', err);
     }
   };
-
   const ShareView = () => (
     <div className="h-full p-5 flex flex-col items-center justify-center">
       <button 
@@ -276,23 +266,13 @@ export default function Home() {
       </button>
 
       <div className="space-y-4">
-        <div className="flex justify-between">
-          <div className="space-y-0.5">
-            <h1 className="text-lg font-medium tracking-tight text-white font-plus-jakarta-sans">
-              Kai Swanborough
-            </h1>
-            <p className="text-xs font-regular text-white/80 font-roboto-mono tracking-tight">
-              {translations[currentLanguage].title}
-            </p>
-          </div>
-
-          <div className="w-20 h-20 rounded-xl overflow-hidden">
-            <img
-              src="/profile-image.jpg"
-              alt="Kai Swanborough"
-              className="w-full h-full object-cover"
-            />
-          </div>
+        <div>
+          <h1 className="text-lg font-medium tracking-tight text-white font-plus-jakarta-sans">
+            Kai Swanborough
+          </h1>
+          <p className="text-xs font-regular text-white/80 font-roboto-mono tracking-tight">
+            {translations[currentLanguage].title}
+          </p>
         </div>
 
         <div className="text-xs text-white/90 font-space-grotesk">
@@ -307,7 +287,7 @@ export default function Home() {
           </div>
         </div>
 
-        <div className="h-40 overflow-y-auto pr-2 space-y-1.5">
+        <div className="h-full overflow-y-auto space-y-1.5">
           <div className="flex items-center justify-between py-1.5 px-3 bg-white/5 rounded-lg">
             <span className="text-xs text-white/70">BeVisioneers: Mercedes-Benz Fellowship</span>
             <span className="text-xs text-white/50">Fellow 24/25</span>
@@ -320,7 +300,6 @@ export default function Home() {
       </div>
     </div>
   );
-
   const ContactView = () => (
     <div className="h-full p-5">
       <button 
@@ -372,28 +351,16 @@ export default function Home() {
   );
 
   const MenuPanel = () => (
-    <div 
-      className={`absolute inset-0 ${
-        isMenuOpen ? 'pointer-events-auto' : 'pointer-events-none'
-      }`}
-    >
-      <div 
-        className={`absolute right-5 top-1/2 -translate-y-1/2 transition-transform duration-300 ${
-          isMenuOpen ? 'translate-x-0' : 'translate-x-full'
-        }`}
-      >
-        <div className="flex items-center gap-4">
-          {['about', 'share', 'contact'].map((view) => (
-            <button
-              key={view}
-              onClick={() => handleViewChange(view as View)}
-              className="text-sm text-white/90 hover:text-white transition-colors"
-            >
-              {translations[currentLanguage][view as keyof typeof translations[typeof currentLanguage]]}
-            </button>
-          ))}
-        </div>
-      </div>
+    <div className="flex items-center gap-4">
+      {['about', 'share', 'contact'].map((view) => (
+        <button
+          key={view}
+          onClick={() => handleViewChange(view as View)}
+          className="text-sm text-white/90 hover:text-white transition-colors"
+        >
+          {translations[currentLanguage][view as keyof typeof translations[typeof currentLanguage]]}
+        </button>
+      ))}
     </div>
   );
   useEffect(() => {
@@ -416,8 +383,8 @@ export default function Home() {
 
   useEffect(() => {
     return () => {
-      if (spinTimeoutRef.current) {
-        clearTimeout(spinTimeoutRef.current);
+      if (flipTimeoutRef.current) {
+        clearTimeout(flipTimeoutRef.current);
       }
     };
   }, []);
@@ -426,9 +393,8 @@ export default function Home() {
     <div className={`min-h-screen bg-gradient-to-br ${themes[themeIndex]} transition-all duration-1000 flex flex-col items-center justify-center gap-8 p-6 ${plusJakartaSans.variable} ${spaceGrotesk.variable} ${robotoMono.variable} font-sans`}>
       <div className="w-80 h-48 [perspective:1000px]">
         <div 
-          onClick={handleCardClick}
-          className={`relative w-full h-full cursor-pointer transition-all duration-300 ease-in-out [transform-style:preserve-3d] ${
-            isSpinning ? '[transform:rotateY(360deg)]' : '[transform:rotateY(0deg)]'
+          className={`relative w-full h-full transition-all duration-300 ease-in-out [transform-style:preserve-3d] ${
+            isFlipping ? '[transform:rotateY(180deg)]' : '[transform:rotateY(0deg)]'
           }`}
         >
           <div className="absolute w-full h-full rounded-xl overflow-hidden ring-2 ring-white/30">
@@ -475,15 +441,12 @@ export default function Home() {
                       <span>in/kaiswanborough</span>
                     </div>
                   </div>
-
-                  <MenuPanel />
                 </div>
               )}
 
               {currentView === 'about' && <AboutView />}
               {currentView === 'share' && <ShareView />}
               {currentView === 'contact' && <ContactView />}
-
               {/* Website Grid Overlay */}
               <div 
                 className={`absolute inset-0 bg-gradient-to-br from-gray-800/95 to-gray-900/95 backdrop-blur-2xl rounded-xl transition-all duration-300 ${
@@ -591,7 +554,7 @@ export default function Home() {
 
       {/* Control Panel */}
       <div className="relative bg-white/80 backdrop-blur-sm rounded-full px-4 py-2 flex items-center gap-8">
-        {!isMenuOpen && (
+        {!isMenuOpen ? (
           <>
             <div 
               onClick={() => setThemeIndex((prev) => (prev + 1) % themes.length)}
@@ -617,7 +580,8 @@ export default function Home() {
               >
                 <span className="font-roboto-mono text-sm font-medium tracking-tight text-gray-800/70">{esTime}</span>
                 {showLocation === 'ES' && (
-                  <div className="absolute -top-8 left-1/2 -translate-x-1/2 px-2 py-1 bg-black/80 text-white text-xs rounded-md whitespace-nowrap flex items-center gap-1">
+                  <div className="absolute -top-8 left-1/2 -translate-x-1/2
+                    px-2 py-1 bg-black/80 text-white text-xs rounded-md whitespace-nowrap flex items-center gap-1">
                     <MapPin className="w-3 h-3" />
                     <span>{translations[currentLanguage].location.es}</span>
                   </div>
@@ -625,13 +589,13 @@ export default function Home() {
               </div>
             </div>
           </>
+        ) : (
+          <MenuPanel />
         )}
 
         <button
           onClick={handleMenuToggle}
-          className={`flex items-center justify-center w-6 h-6 rounded-full bg-black/5 hover:bg-black/10 transition-colors ${
-            isMenuOpen ? 'ml-auto' : ''
-          }`}
+          className="flex items-center justify-center w-6 h-6 rounded-full bg-black/5 hover:bg-black/10 transition-colors"
         >
           {isMenuOpen ? (
             <X className="w-3 h-3 text-gray-800/70" />
