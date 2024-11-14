@@ -195,11 +195,11 @@ export default function Home() {
         <div 
           onClick={handleCardClick}
           className={`relative w-full h-full cursor-pointer transition-all duration-300 ease-in-out [transform-style:preserve-3d] ${
-            isSpinning ? '[transform:rotateY(180deg)]' : '[transform:rotateY(0deg)]'
+            isSpinning ? '[transform:rotateY(360deg)]' : '[transform:rotateY(0deg)]'
           }`}
         >
-          {/* Front Side */}
-          <div className="absolute w-full h-full rounded-xl overflow-hidden ring-2 ring-white/30 [backface-visibility:hidden]">
+          {/* Card Content */}
+          <div className="absolute w-full h-full rounded-xl overflow-hidden ring-2 ring-white/30">
             <div className={`absolute inset-0 ${cardBg} backdrop-blur-xl`} />
             
             <div className="relative h-full p-5">
@@ -243,11 +243,6 @@ export default function Home() {
               </div>
 
               <div className="absolute bottom-4 right-4 w-6 h-6 rounded-full bg-white/10" />
-            </div>
-
-            {/* Back Side (Blank) */}
-            <div className="absolute inset-0 [backface-visibility:hidden] [transform:rotateY(180deg)]">
-              <div className={`absolute inset-0 ${cardBg} backdrop-blur-xl rounded-xl`} />
             </div>
             {/* Website Grid Overlay */}
             <div 
@@ -352,7 +347,6 @@ export default function Home() {
           </div>
         </div>
       </div>
-
       {/* Control Panel */}
       <div className="relative bg-white/80 backdrop-blur-sm shadow-sm rounded-full px-4 py-2 flex items-center gap-8">
         <div 
