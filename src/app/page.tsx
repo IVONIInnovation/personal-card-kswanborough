@@ -330,19 +330,6 @@ export default function Home() {
         >
           <span>ES (+34) 649 058 386</span>
         </div>
-        <div 
-          className="flex items-center gap-2 cursor-pointer hover:text-white transition-colors"
-          onClick={(e) => handleLinkClick(e, 'https://kaiswanborough.com')}
-        >
-          <Globe className="w-3 h-3" />
-          <span>kaiswanborough.com</span>
-        </div>
-        <div 
-          className="flex items-center gap-2 cursor-pointer hover:text-white transition-colors"
-          onClick={(e) => handleLinkClick(e, 'https://linkedin.com/in/kaiswanborough')}
-        >
-          <Linkedin className="w-3 h-3" />
-          <span>in/kaiswanborough</span>
         </div>
       </div>
     </div>
