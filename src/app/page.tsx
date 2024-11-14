@@ -298,7 +298,7 @@ export default function Home() {
       </div>
     </div>
   );
-  const ContactView = () => (
+const ContactView = () => (
     <div className="h-full p-5">
       <button 
         onClick={() => handleViewChange('home')}
@@ -330,6 +330,12 @@ export default function Home() {
         >
           <span>ES (+34) 649 058 386</span>
         </div>
+        <div 
+          className="flex items-center gap-2 cursor-pointer hover:text-white transition-colors"
+          onClick={(e) => handleLinkClick(e, 'mailto:kai@kswanborough.com')}
+        >
+          <Mail className="w-3 h-3" />
+          <span>kai@kswanborough.com</span>
         </div>
       </div>
     </div>
