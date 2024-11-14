@@ -35,15 +35,6 @@ export default function RootLayout({
     <html lang='en'>
       <body className={`${plusJakartaSans.variable} ${spaceGrotesk.variable} ${robotoMono.variable} font-sans`}>
         {children}
-        <footer className='flex items-center justify-center w-full h-24 border-t text-emerald-700 font-semibold'>
-          <a
-            className='flex items-center justify-center'
-            href='https://artifactbin.com?utm_source=template-repo&utm_campaign=oss'
-            target='_blank'
-            rel='noopener noreferrer'
-          >
-          </a>
-        </footer>
       </body>
     </html>
   );
